@@ -23,18 +23,18 @@ app.use(`/`, mainRoutes);
 app.use(`/my`, myRoutes);
 app.use(`/offers`, offersRoutes);
 
-app.use((err, req, res, next) => {
-  res
-    .status(HttpCode.INTERNAL_SERVER_ERROR)
-    .render(`errors/500`);
-});
-
 app.use((req, res) => {
   res
     .status(HttpCode.BAD_REQUEST)
     .render(`errors/404`);
 
   next();
+});
+
+app.use((err, req, res, next) => {
+  res
+    .status(HttpCode.INTERNAL_SERVER_ERROR)
+    .render(`errors/500`);
 });
 
 app.listen(PORT, () => {
