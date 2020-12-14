@@ -2,6 +2,7 @@
 
 const fs = require(`fs`).promises;
 const chalk = require(`chalk`);
+const path = require(`path`);
 const {
   getRandomInt,
   shuffle,
@@ -9,9 +10,9 @@ const {
 
 const DEFAULT_COUNT = 1;
 const FILE_NAME = `./mocks.json`;
-const FILE_CATEGORIES_PATH = `./data/categories.txt`;
-const FILE_SENTENCES_PATH = `./data/sentences.txt`;
-const FILE_TITLES_PATH = `./data/titles.txt`;
+const FILE_CATEGORIES_PATH = `../../../data/categories.txt`;
+const FILE_SENTENCES_PATH = `../../../data/sentences.txt`;
+const FILE_TITLES_PATH = `../../../data/titles.txt`;
 
 const OfferType = {
   OFFER: `offer`,
@@ -56,9 +57,9 @@ module.exports = {
   name: `--generate`,
   async run(args) {
     const options = {
-      titles: await readContent(FILE_TITLES_PATH),
-      sentences: await readContent(FILE_SENTENCES_PATH),
-      categories: await readContent(FILE_CATEGORIES_PATH),
+      titles: await readContent(path.resolve(__dirname, FILE_TITLES_PATH)),
+      sentences: await readContent(path.resolve(__dirname, FILE_SENTENCES_PATH)),
+      categories: await readContent(path.resolve(__dirname, FILE_CATEGORIES_PATH)),
     }
 
     const [count] = args;
