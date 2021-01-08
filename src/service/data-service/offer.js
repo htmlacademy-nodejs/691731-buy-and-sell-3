@@ -1,7 +1,7 @@
 'use strict';
 
-const { nanoid } = require(`nanoid`);
-const { MAX_ID_LENGTH } = require(`../../constants`);
+const {nanoid} = require(`nanoid`);
+const {MAX_ID_LENGTH} = require(`../../constants`);
 
 class OfferService {
   constructor(offers) {
@@ -11,11 +11,11 @@ class OfferService {
   /**
    * Create new offer
    * @param {Object} offer
-   * @returns {Object} new offer
+   * @return {Object} new offer
    */
   create(offer) {
     const newOffer = Object
-      .assign({ id: nanoid(MAX_ID_LENGTH), comments: [] }, offer);
+      .assign({id: nanoid(MAX_ID_LENGTH), comments: []}, offer);
 
     this._offers.push(newOffer);
     return newOffer;
@@ -23,8 +23,8 @@ class OfferService {
 
   /**
    * Delete offer with id
-   * @param {String} id 
-   * @returns {Object} deleted offer
+   * @param {String} id
+   * @return {Object} deleted offer
    */
   drop(id) {
     const offer = this._offers.find((it) => it.id === id);
@@ -39,6 +39,7 @@ class OfferService {
 
   /**
    * Return all offers
+   * @return {Array} offers
    */
   findAll() {
     return this._offers;
@@ -47,7 +48,7 @@ class OfferService {
   /**
    * Search offer with id
    * @param {String} id
-   * @returns {Object} offer 
+   * @return {Object} offer
    */
   findOne(id) {
     return this._offers.find((it) => it.id === id);
@@ -55,15 +56,15 @@ class OfferService {
 
   /**
    * Update exist offer
-   * @param {String} id 
+   * @param {String} id
    * @param {Object} offer
-   * @returns {Object} updated offer 
+   * @return {Object} updated offer
    */
   update(id, offer) {
     const oldOffer = this._offers.find((it) => it.id === id);
 
     return Object.assign(oldOffer, offer);
   }
-};
+}
 
 module.exports = OfferService;

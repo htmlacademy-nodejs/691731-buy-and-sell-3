@@ -1,6 +1,6 @@
 'use strict';
 
-const { Router } = require(`express`);
+const {Router} = require(`express`);
 const offersRoutes = new Router();
 
 offersRoutes.get(`/category/:id`, (req, res) => {
