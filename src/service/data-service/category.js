@@ -6,6 +6,7 @@ class CategoryService {
   }
   /**
    * Search all with some category
+   * @return {Array} categories
    */
   findAll() {
     const categories = this._offers.reduce((acc, offer) => {
@@ -15,6 +16,6 @@ class CategoryService {
 
     return [...categories];
   }
-};
+}
 
 module.exports = CategoryService;

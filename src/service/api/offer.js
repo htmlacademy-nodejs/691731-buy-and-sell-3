@@ -1,14 +1,14 @@
 'use strict';
 
-const { Router } = require(`express`);
-const { HttpCode } = require(`../../constants`);
+const {Router} = require(`express`);
+const {HttpCode} = require(`../../constants`);
 const commentValidator = require(`../middleware/comment-validator`);
 const offerValidator = require(`../middleware/offer-validator`);
 const offerExist = require(`../middleware/offer-exist`);
 
-const route = new Router();
 
 module.exports = (app, offerServices, commentService) => {
+  const route = new Router();
   app.use(`/offers`, route);
 
   // GET /api/offers — ресурс возвращает список объявлений;
@@ -21,7 +21,7 @@ module.exports = (app, offerServices, commentService) => {
 
   // GET /api/offers/:offerId — возвращает полную информацию определённого объявления
   route.get(`/:offerId`, (req, res) => {
-    const { offerId } = req.params;
+    const {offerId} = req.params;
     const offer = offerServices.findOne(offerId);
 
     if (!offer) {
@@ -46,7 +46,7 @@ module.exports = (app, offerServices, commentService) => {
 
   // PUT /api/offers/:offerId — редактирует определённое объявление;
   route.put(`/:offerId`, offerValidator, (req, res) => {
-    const { offerId } = req.params;
+    const {offerId} = req.params;
     const existOffer = offerServices.findOne(offerId);
 
     if (!existOffer) {
@@ -64,7 +64,7 @@ module.exports = (app, offerServices, commentService) => {
 
   // DELETE /api/offers/:offerId — удаляет определённое объявление;
   route.delete(`/:offerId`, (req, res) => {
-    const { offerId } = req.params;
+    const {offerId} = req.params;
     const offer = offerServices.drop(offerId);
 
     if (!offer) {
@@ -80,9 +80,9 @@ module.exports = (app, offerServices, commentService) => {
 
   // GET /api/offers/:offerId/comments — возвращает список комментариев определённого объявления;
   route.get(`/:offerId/comments`, offerExist(offerServices), (req, res) => {
-    const { offer } = res.locals;
+    const {offer} = res.locals;
     const comments = commentService.findAll(offer);
-  
+
     return res
       .status(HttpCode.OK)
       .json(comments);
@@ -90,18 +90,18 @@ module.exports = (app, offerServices, commentService) => {
 
   // POST /api/offers/:offerId/comments — создаёт новый комментарий;
   route.post(`/:offerId/comments`, [offerExist(offerServices), commentValidator], (req, res) => {
-    const { offer } = res.locals;
+    const {offer} = res.locals;
     const comment = commentService.create(offer, req.body);
 
     return res
-      .status(HttpCode.OK)
+      .status(HttpCode.CREATED)
       .json(comment);
   });
 
   // DELETE /api/offers/:offerId/comments/:commentId — удаляет из определённой публикации комментарий с идентификатором;
   route.delete(`/:offerId/comments/:commentId`, offerExist(offerServices), (req, res) => {
-    const { offer } = res.locals;
-    const { commentId } = req.params;
+    const {offer} = res.locals;
+    const {commentId} = req.params;
     const deletedComment = commentService.drop(offer, commentId);
 
     if (!deletedComment) {
@@ -112,6 +112,6 @@ module.exports = (app, offerServices, commentService) => {
 
     return res
       .status(HttpCode.OK)
-      .json(deletedComment)
+      .json(deletedComment);
   });
-}
+};

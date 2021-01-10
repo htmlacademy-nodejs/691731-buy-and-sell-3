@@ -8,7 +8,7 @@ const mainRoutes = require(`./routes/main-routes`);
 const myRoutes = require(`./routes/my-routes`);
 const offersRoutes = require(`./routes/offers-routes`);
 
-const { HttpCode } = require(`../constants`);
+const {HttpCode} = require(`../constants`);
 
 const app = express();
 const PORT = 8000;
@@ -23,7 +23,7 @@ app.use(`/`, mainRoutes);
 app.use(`/my`, myRoutes);
 app.use(`/offers`, offersRoutes);
 
-app.use((req, res) => {
+app.use((req, res, next) => {
   res
     .status(HttpCode.BAD_REQUEST)
     .render(`errors/404`);
@@ -31,7 +31,7 @@ app.use((req, res) => {
   next();
 });
 
-app.use((err, req, res, next) => {
+app.use((_err, _req, res, _next) => {
   res
     .status(HttpCode.INTERNAL_SERVER_ERROR)
     .render(`errors/500`);
