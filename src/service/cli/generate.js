@@ -34,7 +34,7 @@ const SumRestrict = {
 
 const getImgFileName = () => {
   const fileNumber = getRandomInt(1, 16);
-  return fileNumber < 10 ? `item0${fileNumber}.jpeg` : `item${fileNumber}.jpeg`;
+  return fileNumber < 10 ? `item0${fileNumber}.jpg` : `item${fileNumber}.jpg`;
 };
 
 const generateOffers = (count, options) => {
@@ -42,7 +42,7 @@ const generateOffers = (count, options) => {
 
   return Array(count).fill({}).map(() => ({
     id: nanoid(MAX_ID_LENGTH),
-    type: Object.keys(OfferType)[Math.floor(Math.random * Object.keys(OfferType).length)],
+    type: Object.keys(OfferType)[Math.floor(Math.random() * Object.keys(OfferType).length)],
     title: titles[getRandomInt(0, titles.length - 1)],
     description: shuffle(sentences).slice(1, 5).join(` `),
     sum: getRandomInt(SumRestrict.MIN, SumRestrict.MAX),
