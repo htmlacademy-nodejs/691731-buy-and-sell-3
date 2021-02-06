@@ -32,11 +32,13 @@ class API {
   }
 
   async createOffer(data) {
-    console.log(data);
-    return this._load(`offers`, {
+    const {body} = this._load(`offers`, {
       method: `POST`,
-      data
+      json: data,
+      responseType: `json`
     });
+
+    return body;
   }
 }
 
