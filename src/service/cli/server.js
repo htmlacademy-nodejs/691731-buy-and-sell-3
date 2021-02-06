@@ -26,8 +26,15 @@ app.use((req, res) => {
     .send(`Not found`);
   logger.error(`Route not found: ${req.url}`);
 });
-app.use((err, _req, _res, _next) => {
+app.use((err, _req, res, _next) => {
+  res
+    .status(HttpCode.INTERNAL_SERVER_ERROR)
+    .send(`Internal server error`);
   logger.error(`An error occured on processing request: ${err.message}`);
+});
+
+process.on(`unhandledRejection`, (reason, promise) => {
+  logger.error(`Unhandled Rejection at: ${promise}, reason: ${reason}`);
 });
 
 module.exports = {
