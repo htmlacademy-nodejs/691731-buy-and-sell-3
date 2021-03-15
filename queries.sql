@@ -69,7 +69,7 @@ SELECT
 FROM comments
   JOIN users ON comments.user_id = users.id
   ORDER BY comments.created_at DESC
-  LIMIT 5
+  LIMIT 5;
 
 /*
   Get comments list for offer with id = 1 (comment_id, offer_id, author first_name, author last_name, text of comment). Sorted by date of created - new first. 
@@ -83,5 +83,18 @@ SELECT
 FROM comments
   JOIN users ON comments.user_id = users.id
 WHERE comments.offer_id = 1
-  ORDER BY comments.created_at DESC
+  ORDER BY comments.created_at DESC;
 
+/*
+  Get only 2 offers with type OFFER
+*/
+SELECT * from offers
+WHERE type = 'OFFER'
+  LIMIT 2;
+
+/*
+  Update title of offer with id = 1
+*/
+UPDATE offers
+SET title = 'Уникальное предложение!'
+WHERE id = 1;
