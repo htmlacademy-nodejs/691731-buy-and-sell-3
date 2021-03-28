@@ -16,3 +16,6 @@ build/
 mocks.json
 
 upload/
+
+# Файлы с переменными окружения
+.env
