@@ -2,6 +2,7 @@
 
 const express = require(`express`);
 const routes = require(`../api`);
+const sequelize = require(`../lib/sequelize`);
 const {getLogger} = require(`../lib/logger`);
 const {HttpCode, API_PREFIX, ExitCode} = require(`../../constants`);
 
@@ -40,6 +41,15 @@ process.on(`unhandledRejection`, (reason, promise) => {
 module.exports = {
   name: `--server`,
   async run(args) {
+    try {
+      logger.info(`Trying to connect to database...`);
+      await sequelize.authenticate();
+    } catch (err) {
+      logger.error(`An error occured: ${err.message}`);
+      process.exit(ExitCode.ERROR);
+    }
+    logger.info(`Connection to database established`);
+
     const [userPort] = args;
     const serverPort = Number.parseInt(userPort, 10) || DEFAULT_PORT;
     try {
