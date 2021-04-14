@@ -5,8 +5,14 @@ const mainRoutes = new Router();
 const api = require(`../api`).getAPI();
 
 mainRoutes.get(`/`, async (req, res) => {
-  const items = await api.getOffers();
-  res.render(`main`, {items});
+  const [
+    items,
+    categories
+  ] = await Promise.all([
+    api.getOffers(false),
+    api.getCategories(true)
+  ]);
+  res.render(`main`, {items, categories});
 });
 
 mainRoutes.get(`/register`, (req, res) => {
@@ -21,6 +27,7 @@ mainRoutes.get(`/search`, async (req, res) => {
   try {
     const {query} = req.query;
     const results = await api.search(query);
+    console.log(results);
     res.render(`search`, {
       results
     });

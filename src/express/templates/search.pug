@@ -16,7 +16,8 @@ block content
                 .ticket-card__info
                   +ticketLabel(result.type)
                   .ticket-card__categories
-                    a(href='#') #{result.category}
+                    each category in result.categories
+                      a(href='#') #{category.name}
                   .ticket-card__header
                     h3.ticket-card__title
                       a(href='#') #{result.title}

@@ -1,44 +1,41 @@
 'use strict';
 
-const got = require(`got`);
+const axios = require(`axios`);
 
 class API {
-  constructor(prefixUrl, timeout) {
-    this._http = got.extend({
-      prefixUrl,
+  constructor(baseURL, timeout) {
+    this._http = axios.create({
+      baseURL,
       timeout,
     });
   }
 
   async _load(url, options) {
-    const response = await this._http({url, ...options});
-    return JSON.parse(response.body);
+    const response = await this._http.request({url, ...options});
+    return response.data;
   }
 
-  getOffers() {
-    return this._load(`offers`);
+  getOffers(comments) {
+    return this._load(`/offers`, {params: {comments}});
   }
 
-  getOfferId(id) {
-    return this._load(`offers/${id}`);
+  getOfferId(id, comments) {
+    return this._load(`/offers/${id}`, {params: {comments}});
   }
 
   search(query) {
-    return this._load(`search`, {searchParams: {query}});
+    return this._load(`/search`, {params: {query}});
   }
 
-  getCategories() {
-    return this._load(`categories`);
+  getCategories(count) {
+    return this._load(`/categories`, {params: {count}});
   }
 
   async createOffer(data) {
-    const {body} = this._load(`offers`, {
+    return this._load(`/offers`, {
       method: `POST`,
-      json: data,
-      responseType: `json`
+      data,
     });
-
-    return body;
   }
 }
 

@@ -1,20 +1,45 @@
 'use strict';
 
-class CategoryService {
-  constructor(offers) {
-    this._offers = offers;
-  }
-  /**
-   * Search all with some category
-   * @return {Array} categories
-   */
-  findAll() {
-    const categories = this._offers.reduce((acc, offer) => {
-      offer.category.forEach((category) => acc.add(category));
-      return acc;
-    }, new Set());
+const Sequelize = require(`sequelize`);
+const Aliase = require(`../models/aliase`);
 
-    return [...categories];
+/**
+ * Class with services for work with categories data
+ * The constructor takes as a parameter the exemplar of sequelize (The object with connection settings to database)
+ *
+ * The method "findAll()" return promise (it get all categories from database)
+ */
+class CategoryService {
+  constructor(sequelize) {
+    this._Category = sequelize.models.Category;
+    this._OfferCategory = sequelize.models.OfferCategory;
+  }
+
+  async findAll(needCount) {
+    if (needCount) {
+      const result = await this._Category.findAll({
+        attributes: [
+          `id`,
+          `name`,
+          [
+            Sequelize.fn(
+                `COUNT`,
+                `*`
+            ),
+            `count`
+          ]
+        ],
+        group: [Sequelize.col(`Category.id`)],
+        include: [{
+          model: this._OfferCategory,
+          as: Aliase.OFFER_CATEGORIES,
+          attributes: []
+        }]
+      });
+      return result.map((it) => it.get());
+    } else {
+      return this._Category.findAll({raw: true});
+    }
   }
 }
 

@@ -13,11 +13,12 @@ block content
             li.tickets-list__item.js-card
               .ticket-card.ticket-card--color06
                 .ticket-card__img
-                  img(src=`img/${myItem.picture}` alt=myItem.title)
+                  +offerPictures(myItem.pictures, myItem.title)
                 .ticket-card__info
                   +ticketLabel(myItem.type)
                   .ticket-card__categories
-                    a(href='#') #{myItem.category}
+                    each category in myItem.categories
+                      a(href='#') #{category.name}
                   .ticket-card__header
                     h3.ticket-card__title
                       a(href=`/offers/${myItem.id}`) #{myItem.title}

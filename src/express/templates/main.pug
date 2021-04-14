@@ -15,16 +15,16 @@ block content
             li.tickets-list__item
               .ticket-card.ticket-card--color01
                 .ticket-card__img
-                  img(src=`/img/${item.picture}` alt=item.title)
+                  +offerPictures(item.pictures, item.title)
                 .ticket-card__info
                   +ticketLabel(item.type)
                   .ticket-card__categories
-                    a(href='#') #{item.category}
+                    each category in item.categories
+                      a(href='#') #{category.name}
                   .ticket-card__header
                     h3.ticket-card__title
                       a(href=`/offers/${item.id}`) #{item.title}
                     p.ticket-card__price
-                      span.js-sum #{item.sum}
-                      |  ₽
+                      span.js-sum #{item.sum} ₽
                   .ticket-card__desc
                     p #{item.description}

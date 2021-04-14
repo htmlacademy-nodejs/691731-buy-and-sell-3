@@ -1,51 +1,31 @@
 'use strict';
 
-const {nanoid} = require(`nanoid`);
-const {MAX_ID_LENGTH} = require(`../../constants`);
-
 class CommentService {
-  /**
-   * Create new comment
-   * @param {Object} offer
-   * @param {Object} comment
-   * @return {String} comment
-   */
-  create(offer, comment) {
-    const newComment = Object.assign({
-      id: nanoid(MAX_ID_LENGTH),
-    }, comment);
-
-    offer.comments.push(newComment);
-    return comment;
+  constructor(sequlize) {
+    this._Offer = sequlize.models.Offer;
+    this._Comment = sequlize.models.Comment;
   }
 
-  /**
-   * Delet some comment with commentId
-   * @param {Object} offer
-   * @param {String} commentId
-   * @return {String} deleted comment
-   */
-  drop(offer, commentId) {
-    const dropComment = offer.comments
-      .find((comment) => comment.id === commentId);
-
-    if (!dropComment) {
-      return null;
-    }
-
-    offer.comments = offer.comments
-      .filter((comment) => comment.id !== commentId);
-
-    return dropComment;
+  async create(offerId, comment) { // create a new comment for offer fith offerId
+    return this._Comment.create({
+      offerId,
+      ...comment
+    });
   }
 
-  /**
-   * Return all comments from Offer
-   * @param {Object} offer
-   * @return {Array} comments
-   */
-  findAll(offer) {
-    return offer.comments;
+  async drop(id) { // delete some comment with some id
+    const deletedRows = this._Comment.destroy({
+      where: {id}
+    });
+
+    return !!deletedRows;
+  }
+
+  findAll(offerId) { // return all comments for offer with some offerId
+    return this._Comment.findAll({
+      where: {offerId},
+      raw: true
+    });
   }
 }
 

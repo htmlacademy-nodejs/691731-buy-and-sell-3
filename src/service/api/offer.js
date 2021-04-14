@@ -12,17 +12,19 @@ module.exports = (app, offerServices, commentService) => {
   app.use(`/offers`, route);
 
   // GET /api/offers — ресурс возвращает список объявлений;
-  route.get(`/`, (req, res) => {
-    const offers = offerServices.findAll();
+  route.get(`/`, async (req, res) => {
+    const {comments} = req.query;
+    const offers = await offerServices.findAll(comments);
     return res
       .status(HttpCode.OK)
       .json(offers);
   });
 
   // GET /api/offers/:offerId — возвращает полную информацию определённого объявления
-  route.get(`/:offerId`, (req, res) => {
+  route.get(`/:offerId`, async (req, res) => {
     const {offerId} = req.params;
-    const offer = offerServices.findOne(offerId);
+    const {comments} = req.query;
+    const offer = await offerServices.findOne(offerId, comments);
 
     if (!offer) {
       return res
