@@ -6,7 +6,6 @@ const commentValidator = require(`../middleware/comment-validator`);
 const offerValidator = require(`../middleware/offer-validator`);
 const offerExist = require(`../middleware/offer-exist`);
 
-
 module.exports = (app, offerServices, commentService) => {
   const route = new Router();
   app.use(`/offers`, route);
@@ -38,8 +37,8 @@ module.exports = (app, offerServices, commentService) => {
   });
 
   // POST /api/offers — создаёт новое объявление;
-  route.post(`/`, offerValidator, (req, res) => {
-    const offer = offerServices.create(req.body);
+  route.post(`/`, offerValidator, async (req, res) => {
+    const offer = await offerServices.create(req.body);
 
     return res
       .status(HttpCode.CREATED)

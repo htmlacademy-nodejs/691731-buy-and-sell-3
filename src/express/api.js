@@ -31,7 +31,7 @@ class API {
     return this._load(`/categories`, {params: {count}});
   }
 
-  async createOffer(data) {
+  createOffer(data) {
     return this._load(`/offers`, {
       method: `POST`,
       data,
