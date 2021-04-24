@@ -6,7 +6,7 @@ class CommentService {
     this._Comment = sequlize.models.Comment;
   }
 
-  async create(offerId, comment) { // create a new comment for offer fith offerId
+  create(offerId, comment) { // create a new comment for offer fith offerId
     return this._Comment.create({
       offerId,
       ...comment
@@ -14,7 +14,7 @@ class CommentService {
   }
 
   async drop(id) { // delete some comment with some id
-    const deletedRows = this._Comment.destroy({
+    const deletedRows = await this._Comment.destroy({
       where: {id}
     });
 
