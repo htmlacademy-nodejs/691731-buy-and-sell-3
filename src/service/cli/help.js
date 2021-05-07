@@ -16,6 +16,7 @@ module.exports = {
           --help:               печатает этот текст
           --generate <count>    формирует файл mocks.json
           --server <port>       запускает api сервер на <port>
+          --filldb <count>      fill database of mock data
     `));
   }
 };

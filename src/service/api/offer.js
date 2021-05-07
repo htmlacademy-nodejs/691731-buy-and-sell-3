@@ -6,23 +6,24 @@ const commentValidator = require(`../middleware/comment-validator`);
 const offerValidator = require(`../middleware/offer-validator`);
 const offerExist = require(`../middleware/offer-exist`);
 
-
 module.exports = (app, offerServices, commentService) => {
   const route = new Router();
   app.use(`/offers`, route);
 
   // GET /api/offers — ресурс возвращает список объявлений;
-  route.get(`/`, (req, res) => {
-    const offers = offerServices.findAll();
+  route.get(`/`, async (req, res) => {
+    const {comments} = req.query;
+    const offers = await offerServices.findAll(comments);
     return res
       .status(HttpCode.OK)
       .json(offers);
   });
 
   // GET /api/offers/:offerId — возвращает полную информацию определённого объявления
-  route.get(`/:offerId`, (req, res) => {
+  route.get(`/:offerId`, async (req, res) => {
     const {offerId} = req.params;
-    const offer = offerServices.findOne(offerId);
+    const {comments} = req.query;
+    const offer = await offerServices.findOne(offerId, comments);
 
     if (!offer) {
       return res
@@ -36,8 +37,8 @@ module.exports = (app, offerServices, commentService) => {
   });
 
   // POST /api/offers — создаёт новое объявление;
-  route.post(`/`, offerValidator, (req, res) => {
-    const offer = offerServices.create(req.body);
+  route.post(`/`, offerValidator, async (req, res) => {
+    const offer = await offerServices.create(req.body);
 
     return res
       .status(HttpCode.CREATED)
@@ -45,9 +46,9 @@ module.exports = (app, offerServices, commentService) => {
   });
 
   // PUT /api/offers/:offerId — редактирует определённое объявление;
-  route.put(`/:offerId`, offerValidator, (req, res) => {
+  route.put(`/:offerId`, offerValidator, async (req, res) => {
     const {offerId} = req.params;
-    const existOffer = offerServices.findOne(offerId);
+    const existOffer = await offerServices.findOne(offerId);
 
     if (!existOffer) {
       return res
@@ -63,9 +64,9 @@ module.exports = (app, offerServices, commentService) => {
   });
 
   // DELETE /api/offers/:offerId — удаляет определённое объявление;
-  route.delete(`/:offerId`, (req, res) => {
+  route.delete(`/:offerId`, async (req, res) => {
     const {offerId} = req.params;
-    const offer = offerServices.drop(offerId);
+    const offer = await offerServices.drop(offerId);
 
     if (!offer) {
       return res
@@ -79,9 +80,9 @@ module.exports = (app, offerServices, commentService) => {
   });
 
   // GET /api/offers/:offerId/comments — возвращает список комментариев определённого объявления;
-  route.get(`/:offerId/comments`, offerExist(offerServices), (req, res) => {
-    const {offer} = res.locals;
-    const comments = commentService.findAll(offer);
+  route.get(`/:offerId/comments`, offerExist(offerServices), async (req, res) => {
+    const {offerId} = req.params;
+    const comments = await commentService.findAll(offerId);
 
     return res
       .status(HttpCode.OK)
@@ -89,9 +90,9 @@ module.exports = (app, offerServices, commentService) => {
   });
 
   // POST /api/offers/:offerId/comments — создаёт новый комментарий;
-  route.post(`/:offerId/comments`, [offerExist(offerServices), commentValidator], (req, res) => {
-    const {offer} = res.locals;
-    const comment = commentService.create(offer, req.body);
+  route.post(`/:offerId/comments`, [offerExist(offerServices), commentValidator], async (req, res) => {
+    const {offerId} = req.params;
+    const comment = await commentService.create(offerId, req.body);
 
     return res
       .status(HttpCode.CREATED)
@@ -99,10 +100,9 @@ module.exports = (app, offerServices, commentService) => {
   });
 
   // DELETE /api/offers/:offerId/comments/:commentId — удаляет из определённой публикации комментарий с идентификатором;
-  route.delete(`/:offerId/comments/:commentId`, offerExist(offerServices), (req, res) => {
-    const {offer} = res.locals;
+  route.delete(`/:offerId/comments/:commentId`, offerExist(offerServices), async (req, res) => {
     const {commentId} = req.params;
-    const deletedComment = commentService.drop(offer, commentId);
+    const deletedComment = await commentService.drop(commentId);
 
     if (!deletedComment) {
       return res

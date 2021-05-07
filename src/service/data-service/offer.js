@@ -1,69 +1,52 @@
 'use strict';
 
-const {nanoid} = require(`nanoid`);
-const {MAX_ID_LENGTH} = require(`../../constants`);
+const Aliase = require(`../models/aliase`);
 
 class OfferService {
-  constructor(offers) {
-    this._offers = offers;
+  constructor(sequelize) {
+    this._Offer = sequelize.models.Offer;
+    this._Comment = sequelize.models.Comment;
+    this._Category = sequelize.models.Category;
+    this._Picture = sequelize.models.Picture;
   }
 
-  /**
-   * Create new offer
-   * @param {Object} offer
-   * @return {Object} new offer
-   */
-  create(offer) {
-    const newOffer = Object
-      .assign({id: nanoid(MAX_ID_LENGTH), comments: []}, offer);
-
-    this._offers.push(newOffer);
-    return newOffer;
+  async create(offerData) {
+    const offer = await this._Offer.create(offerData, {include: [Aliase.PICTURES]});
+    await offer.addCategories(offerData.categories);
+    return offer.get();
   }
 
-  /**
-   * Delete offer with id
-   * @param {String} id
-   * @return {Object} deleted offer
-   */
-  drop(id) {
-    const offer = this._offers.find((it) => it.id === id);
+  async drop(id) {
+    const deletedRows = await this._Offer.destroy({
+      where: {id}
+    });
 
-    if (!offer) {
-      return null;
+    return !!deletedRows;
+  }
+
+  async findAll(needComments) {
+    const include = [Aliase.CATEGORIES, Aliase.PICTURES];
+    if (needComments) {
+      include.push(Aliase.COMMENTS);
     }
-
-    this._offers = this._offers.filter((it) => it.id !== id);
-    return offer;
+    const offers = await this._Offer.findAll({include});
+    return offers.map((item) => item.get());
   }
 
-  /**
-   * Return all offers
-   * @return {Array} offers
-   */
-  findAll() {
-    return this._offers;
+  findOne(id, needComments) {
+    const include = [Aliase.CATEGORIES, Aliase.PICTURES];
+    if (needComments) {
+      include.push(Aliase.COMMENTS);
+    }
+    return this._Offer.findByPk(id, {include});
   }
 
-  /**
-   * Search offer with id
-   * @param {String} id
-   * @return {Object} offer
-   */
-  findOne(id) {
-    return this._offers.find((it) => it.id === id);
-  }
+  async update(id, offer) {
+    const [affectedRows] = await this._Offer.update(offer, {
+      where: {id}
+    });
 
-  /**
-   * Update exist offer
-   * @param {String} id
-   * @param {Object} offer
-   * @return {Object} updated offer
-   */
-  update(id, offer) {
-    const oldOffer = this._offers.find((it) => it.id === id);
-
-    return Object.assign(oldOffer, offer);
+    return !!affectedRows;
   }
 }
 

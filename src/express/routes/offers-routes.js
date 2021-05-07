@@ -27,19 +27,21 @@ offersRoutes.get(`/category/:id`, (req, res) => {
 });
 
 offersRoutes.get(`/add`, async (req, res) => {
-  const categories = await api.getCategories();
+  const categories = await api.getCategories(false);
   res.render(`offers/new-ticket`, {categories});
 });
 
 offersRoutes.post(`/add`, upload.single(`avatar`), async (req, res) => {
   const {body, file} = req;
+  const picture = Array(1).fill({}).map(() => ({src: file.filename}));
+
   const offerData = {
-    picture: file.filename,
+    pictures: picture,
     sum: body.price,
     type: body.action,
     description: body.comment,
     title: body[`ticket-name`],
-    category: body.category
+    categories: body.category
   };
   try {
     await api.createOffer(offerData);
@@ -60,7 +62,7 @@ offersRoutes.get(`/edit/:id`, async (req, res) => {
 
 offersRoutes.get(`/:id`, async (req, res) => {
   const {id} = req.params;
-  const item = await api.getOfferId(id);
+  const item = await api.getOfferId(id, true);
   res.render(`offers/ticket`, {item});
 });
 
