@@ -12,8 +12,13 @@ module.exports = (app, offerServices, commentService) => {
 
   // GET /api/offers — ресурс возвращает список объявлений;
   route.get(`/`, async (req, res) => {
-    const {comments} = req.query;
-    const offers = await offerServices.findAll(comments);
+    const {offset, limit, comments} = req.query;
+    let offers;
+    if (limit || offset) {
+      offers = await offerServices.findPage({limit, offset});
+    } else {
+      offers = await offerServices.findAll(comments);
+    }
     return res
       .status(HttpCode.OK)
       .json(offers);

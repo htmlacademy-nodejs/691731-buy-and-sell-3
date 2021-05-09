@@ -10,6 +10,16 @@ class OfferService {
     this._Picture = sequelize.models.Picture;
   }
 
+  async findPage({limit, offset}) {
+    const {count, rows} = await this._Offer.findAndCountAll({
+      limit,
+      offset,
+      include: [Aliase.CATEGORIES, Aliase.PICTURES],
+      distinct: true
+    });
+    return {count, offers: rows};
+  }
+
   async create(offerData) {
     const offer = await this._Offer.create(offerData, {include: [Aliase.PICTURES]});
     await offer.addCategories(offerData.categories);

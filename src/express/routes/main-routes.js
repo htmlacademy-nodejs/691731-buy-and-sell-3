@@ -1,18 +1,32 @@
 'use strict';
 
 const {Router} = require(`express`);
+const {OFFERS_PER_PAGE} = require(`../../constants`);
 const mainRoutes = new Router();
 const api = require(`../api`).getAPI();
 
 mainRoutes.get(`/`, async (req, res) => {
+  // Get page number
+  let {page = 1} = req.query;
+  page = +page;
+
+  // Number of requesting offers is equal offer's number on page
+  const limit = OFFERS_PER_PAGE;
+
+  // Number of offers to skip - number of offers on previous pages
+  const offset = (page - 1) * OFFERS_PER_PAGE;
   const [
-    items,
+    {count, offers},
     categories
   ] = await Promise.all([
-    api.getOffers(false),
+    api.getOffers({limit, offset}),
     api.getCategories(true)
   ]);
-  res.render(`main`, {items, categories});
+
+  // Number of pages - total number of offers divided by the number of offers per page
+  const totalPages = Math.ceil(count / OFFERS_PER_PAGE);
+  const items = offers;
+  res.render(`main`, {items, categories, page, totalPages});
 });
 
 mainRoutes.get(`/register`, (req, res) => {
