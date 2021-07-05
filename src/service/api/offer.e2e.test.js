@@ -194,8 +194,8 @@ describe(`Test GET /offers/1`, () => {
 describe(`Test POST /offers`, () => {
   const newOffer = {
     categories: [1, 2],
-    title: `Some title`,
-    description: `Some describe`,
+    title: `Some title of new offer`,
+    description: `Some describe which need more than 50 letters and it's crazy demand`,
     pictures: [{src: `some_pic.jpg`}],
     type: `OFFER`,
     sum: 100500,
@@ -204,7 +204,6 @@ describe(`Test POST /offers`, () => {
   let app;
 
   describe(`+`, () => {
-
 
     beforeAll(async () => {
       app = await createAPI();
@@ -243,6 +242,34 @@ describe(`Test POST /offers`, () => {
           .expect(HttpCode.BAD_REQUEST);
       }
     });
+
+    test(`When field type is wrong response code is 400`, async () => {
+      const badOffers = [
+        {...newOffer, sum: true},
+        {...newOffer, picture: 12345},
+        {...newOffer, categories: `Wrong category`}
+      ];
+      for (const badOffer of badOffers) {
+        await request(app)
+          .post(`/offers`)
+          .send(badOffer)
+          .expect(HttpCode.BAD_REQUEST);
+      }
+    });
+
+    test(`When field value is wrong response code is 400`, async () => {
+      const badOffers = [
+        {...newOffer, sum: -1},
+        {...newOffer, title: `too short`},
+        {...newOffer, categories: []}
+      ];
+      for (const badOffer of badOffers) {
+        await request(app)
+          .post(`/offers`)
+          .send(badOffer)
+          .expect(HttpCode.BAD_REQUEST);
+      }
+    });
   });
 });
 
@@ -267,11 +294,11 @@ describe(`Test PUT /offers/2`, () => {
         .send(newOffer);
     });
 
-
     test(`Status code is 200`, () =>
       expect(response.statusCode)
         .toBe(HttpCode.OK)
     );
+
     test(`Offer is really changed`, () => request(app)
       .get(`/offers/2`)
       .expect((res) =>
