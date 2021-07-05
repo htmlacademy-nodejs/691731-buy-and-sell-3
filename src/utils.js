@@ -33,7 +33,17 @@ const getRandomInt = (min, max) => {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 };
 
+/**
+ * Проверяет, является ли переданный параметр массивом, если является - возвращает его без изменений,
+ * в противном случае оборачивает значение в массив из одного элемента
+ *
+ * @param {Any} value
+ * @return {Array}
+ */
+const ensureArray = (value) => Array.isArray(value) ? value : [value];
+
 module.exports = {
+  ensureArray,
   getRandomInt,
   shuffle,
 };

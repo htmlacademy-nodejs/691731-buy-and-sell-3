@@ -5,6 +5,7 @@ const {HttpCode} = require(`../../constants`);
 const commentValidator = require(`../middleware/comment-validator`);
 const offerValidator = require(`../middleware/offer-validator`);
 const offerExist = require(`../middleware/offer-exist`);
+const routeParamsValidator = require(`../middleware/route-params-validator`);
 
 module.exports = (app, offerServices, commentService) => {
   const route = new Router();
@@ -25,7 +26,7 @@ module.exports = (app, offerServices, commentService) => {
   });
 
   // GET /api/offers/:offerId — возвращает полную информацию определённого объявления
-  route.get(`/:offerId`, async (req, res) => {
+  route.get(`/:offerId`, routeParamsValidator, async (req, res) => {
     const {offerId} = req.params;
     const {comments} = req.query;
     const offer = await offerServices.findOne(offerId, comments);
@@ -42,7 +43,7 @@ module.exports = (app, offerServices, commentService) => {
   });
 
   // POST /api/offers — создаёт новое объявление;
-  route.post(`/`, offerValidator, async (req, res) => {
+  route.post(`/`, [routeParamsValidator, offerValidator], async (req, res) => {
     const offer = await offerServices.create(req.body);
 
     return res
@@ -51,7 +52,7 @@ module.exports = (app, offerServices, commentService) => {
   });
 
   // PUT /api/offers/:offerId — редактирует определённое объявление;
-  route.put(`/:offerId`, offerValidator, async (req, res) => {
+  route.put(`/:offerId`, [routeParamsValidator, offerValidator], async (req, res) => {
     const {offerId} = req.params;
     const existOffer = await offerServices.findOne(offerId);
 
@@ -69,7 +70,7 @@ module.exports = (app, offerServices, commentService) => {
   });
 
   // DELETE /api/offers/:offerId — удаляет определённое объявление;
-  route.delete(`/:offerId`, async (req, res) => {
+  route.delete(`/:offerId`, routeParamsValidator, async (req, res) => {
     const {offerId} = req.params;
     const offer = await offerServices.drop(offerId);
 
@@ -85,7 +86,7 @@ module.exports = (app, offerServices, commentService) => {
   });
 
   // GET /api/offers/:offerId/comments — возвращает список комментариев определённого объявления;
-  route.get(`/:offerId/comments`, offerExist(offerServices), async (req, res) => {
+  route.get(`/:offerId/comments`, [routeParamsValidator, offerExist(offerServices)], async (req, res) => {
     const {offerId} = req.params;
     const comments = await commentService.findAll(offerId);
 
@@ -95,7 +96,7 @@ module.exports = (app, offerServices, commentService) => {
   });
 
   // POST /api/offers/:offerId/comments — создаёт новый комментарий;
-  route.post(`/:offerId/comments`, [offerExist(offerServices), commentValidator], async (req, res) => {
+  route.post(`/:offerId/comments`, [routeParamsValidator, offerExist(offerServices), commentValidator], async (req, res) => {
     const {offerId} = req.params;
     const comment = await commentService.create(offerId, req.body);
 
@@ -105,7 +106,7 @@ module.exports = (app, offerServices, commentService) => {
   });
 
   // DELETE /api/offers/:offerId/comments/:commentId — удаляет из определённой публикации комментарий с идентификатором;
-  route.delete(`/:offerId/comments/:commentId`, offerExist(offerServices), async (req, res) => {
+  route.delete(`/:offerId/comments/:commentId`, [routeParamsValidator, offerExist(offerServices)], async (req, res) => {
     const {commentId} = req.params;
     const deletedComment = await commentService.drop(commentId);
 

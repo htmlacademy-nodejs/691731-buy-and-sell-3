@@ -17,6 +17,13 @@ module.exports.HttpCode = {
   INTERNAL_SERVER_ERROR: 500,
 };
 
+module.exports.HttpMethod = {
+  GET: `GET`,
+  POST: `POST`,
+  PUT: `PUT`,
+  DELETE: `DELETE`
+};
+
 module.exports.Env = {
   DEVELOPMENT: `development`,
   PRODUCTION: `production`,
